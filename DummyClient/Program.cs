@@ -25,8 +25,4 @@ while ( true )
 
     Thread.Sleep( 1000 );
 }
-class Packet
-{
-    public ushort size;
-    public ushort packetId;
-}
+

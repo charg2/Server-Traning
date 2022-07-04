@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using static ServerCore.PacketSession;
 
 namespace ServerCore;
 
@@ -32,10 +33,7 @@ public abstract class PacketSession : Session
         return processLen;
     }
 
-    public abstract void OnRecvPacket( ArraySegment<byte> buffer );
-}
-
-public abstract class Session
+    public abstract class Session
 {
     private Socket _socket;
     private int    _disconnected = 0;
@@ -141,8 +139,6 @@ public abstract class Session
             OnRecvCompleted( null, _recvArgs );
     }
 
-    //private List< Span< byte > > l;
-    private List< Memory< byte > > l2;
 
     void OnRecvCompleted( object sender, SocketAsyncEventArgs args )
     {
@@ -150,7 +146,27 @@ public abstract class Session
         {
             try
             {
-                OnRecv( new ArraySegment< byte >( args.Buffer, args.Offset, args.BytesTransferred ) );
+                // Write 커서 이동
+                if ( !_recvBuffer.OnWrite( args.BytesTransferred ) )
+                {
+                    Disconnect();
+                    return;
+                }
+
+                // 컨텐츠 쪽으로 데이터를 넘겨주고 얼마나 처리했는지를 받는다.
+                int processLen = OnRecv(_recvBuffer.ReadSegment);
+                if ( processLen < 0 || _recvBuffer.DataSize < processLen )
+                {
+                    Disconnect();
+                    return;
+                }
+
+                // Read 커서 이동
+                if ( !_recvBuffer.OnRead( processLen ) )
+                {
+                    Disconnect();
+                    return;
+                }
 
                 RegisterRecv();
             }
