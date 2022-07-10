@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using static ServerCore.PacketSession;
 
 namespace ServerCore;
 
@@ -10,7 +9,7 @@ public abstract class PacketSession : Session
     public static readonly int HeaderSize = 2;
 
     // [size(2)][packetId(2)][...][size(2)][packetId(2)][...]
-    public sealed override int OnRecv( ArraySegment<byte> buffer )
+    public sealed override int OnRecv( ArraySegment< byte > buffer )
     {
         int processLen = 0;
 
@@ -21,19 +20,22 @@ public abstract class PacketSession : Session
                 break;
 
             // 패킷이 완전체로 도착했는지 확인
-            ushort dataSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            ushort dataSize = BitConverter.ToUInt16( buffer.Array, buffer.Offset );
             if ( buffer.Count < dataSize )
                 break;
 
             // 여기까지 왔으면 패킷 조립이 가능하다
-            OnRecvPacket( new ArraySegment<byte>( buffer.Array, buffer.Offset, dataSize ) );
+            OnRecvPacket( new ArraySegment< byte >( buffer.Array, buffer.Offset, dataSize ) );
             processLen += dataSize;
-            buffer     =  new ArraySegment<byte>( buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize );
+            buffer     =  new ArraySegment< byte >( buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize );
         }
         return processLen;
     }
 
-    public abstract class Session
+    public abstract void OnRecvPacket( ArraySegment<byte> buffer );
+}
+
+public abstract class Session
 {
     private Socket _socket;
     private int    _disconnected = 0;
@@ -134,7 +136,7 @@ public abstract class PacketSession : Session
 
     void RegisterRecv()
     {
-        bool pending = _socket.ReceiveAsync(_recvArgs);
+        bool pending = _socket.ReceiveAsync( _recvArgs );
         if ( !pending )
             OnRecvCompleted( null, _recvArgs );
     }
@@ -154,7 +156,7 @@ public abstract class PacketSession : Session
                 }
 
                 // 컨텐츠 쪽으로 데이터를 넘겨주고 얼마나 처리했는지를 받는다.
-                int processLen = OnRecv(_recvBuffer.ReadSegment);
+                int processLen = OnRecv( _recvBuffer.ReadSegment );
                 if ( processLen < 0 || _recvBuffer.DataSize < processLen )
                 {
                     Disconnect();
