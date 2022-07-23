@@ -15,7 +15,7 @@ class ServerSession : Session
     public override void OnConnected( EndPoint endPoint )
     {
         Console.WriteLine( $"OnConnected : {endPoint}" );
-        var packet = new PlayerInfoReq() { packetId = 1, name = "ABCD" };
+        var packet = new PlayerInfoReq() { playerId = 1, name = "ABCD" };
         packet.skills.Add( new PlayerInfoReq.SkillInfo() { id = 101, level = 1, duration = 3.0f } );
         packet.skills.Add( new PlayerInfoReq.SkillInfo() { id = 201, level = 2, duration = 4.0f } );
         packet.skills.Add( new PlayerInfoReq.SkillInfo() { id = 301, level = 3, duration = 5.0f } );

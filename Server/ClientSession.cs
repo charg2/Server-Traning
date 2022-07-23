@@ -40,9 +40,12 @@ class ClientSession : PacketSession
                     Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
             } 
             break;
+            default:
+            {
+                Console.WriteLine( "error id : " + id.ToString() );
+            }
+            break;
         }
-
-        Console.WriteLine( "error" );
     }
 
     public override void OnDisConnected( EndPoint endPoint )

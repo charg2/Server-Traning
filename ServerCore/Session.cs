@@ -63,9 +63,8 @@ public abstract class Session
         _socket = socket;
 
         _recvArgs.Completed += OnRecvCompleted;
-        _recvArgs.SetBuffer( new byte[ 1024 ], 0, 1024 );
-
         _sendArgs.Completed += OnSendCompleted;
+
         RegisterRecv();
     }
 
@@ -136,6 +135,10 @@ public abstract class Session
 
     void RegisterRecv()
     {
+        _recvBuffer.Clean();
+        ArraySegment< byte > segment = _recvBuffer.WriteSegment;
+        _recvArgs.SetBuffer( segment.Array, segment.Offset, segment.Count );
+
         bool pending = _socket.ReceiveAsync( _recvArgs );
         if ( !pending )
             OnRecvCompleted( null, _recvArgs );
