@@ -7,7 +7,11 @@ using Server;
 using ServerCore;
 
 
+
+
 Listener _listener = new Listener();
+
+PacketManager.Instance.Register();
 
 // DNS (Domain Name System)
 string      host     = Dns.GetHostName();

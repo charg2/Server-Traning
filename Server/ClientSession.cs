@@ -21,31 +21,7 @@ class ClientSession : PacketSession
 
     public override void OnRecvPacket( ArraySegment<byte> buffer )
     {
-        ushort count = 0;
-
-        ushort size = BitConverter.ToUInt16( buffer.Array, buffer.Offset );
-        count += 2;
-        ushort id = BitConverter.ToUInt16( buffer.Array, buffer.Offset + count );
-        count += 2;
-
-        switch ( (PacketID)id )
-        {
-            case PacketID.PlayerInfoReq:
-            {
-                var p = new PlayerInfoReq();
-                p.Read( buffer );
-                Console.WriteLine( $"PlayerInfoReq : {p.playerId} {p.name}" );
-
-                foreach ( PlayerInfoReq.Skill skill in p.skills )
-                    Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
-            } 
-            break;
-            default:
-            {
-                Console.WriteLine( "error id : " + id.ToString() );
-            }
-            break;
-        }
+        PacketManager.Instance.OnRecvPacket( this, buffer );
     }
 
     public override void OnDisConnected( EndPoint endPoint )

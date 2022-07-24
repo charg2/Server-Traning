@@ -14,6 +14,14 @@ public enum PacketID
 {{
     {0}
 }}
+
+interface IPacket
+{{
+    ushort Protocol {{ get; }}
+    void Read( ArraySegment< byte > segment );
+    ArraySegment< byte > Write();
+}}
+
 {1}
 ";
     // {0} 패킷 이름
@@ -27,31 +35,35 @@ public enum PacketID
     // {2} 멤버 변수 Rread
     // {3} 멤버 변수 Write
     public static string packetFormat =
-@"class {0}
+@"class {0} : IPacket
 {{
     {1}   
-    public void Read(ArraySegment<byte> segment)
+
+    public ushort Protocol => (ushort)( PacketID.{0} );
+
+    public void Read( ArraySegment< byte > segment )
     {{
         ushort count = 0;
-        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
-        count += sizeof(ushort);
-        count += sizeof(ushort);
+        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >(segment.Array, segment.Offset, segment.Count);
+        count += sizeof( ushort );
+        count += sizeof( ushort );
         {2}
     }}
-    public ArraySegment<byte> Write()
+    public ArraySegment< byte > Write()
     {{
-        ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+        ArraySegment< byte > segment = SendBufferHelper.Open( 4096 );
         ushort count = 0;
         bool success = true;
-        Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
-        count += sizeof(ushort);
-        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length-count), (ushort)PacketID.{0});
-        count += sizeof(ushort); 
+        Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
+        count += sizeof( ushort );
+        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.{0} );
+        count += sizeof( ushort ); 
         {3}
-        success &= BitConverter.TryWriteBytes(s, count);
-        if (success == false)
+        success &= BitConverter.TryWriteBytes( s, count );
+        if ( success == false )
             return null;
-        return SendBufferHelper.Close(count);
+
+        return SendBufferHelper.Close( count );
     }}
 }}";
 
@@ -69,11 +81,11 @@ public enum PacketID
 @"public class {0}
 {{
 	{2}
-	public void Read(ReadOnlySpan<byte> s, ref ushort count)
+	public void Read( ReadOnlySpan< byte > s, ref ushort count )
 	{{
 		{3}
 	}}
-	public bool Write(Span<byte> s, ref ushort count)
+	public bool Write( Span< byte > s, ref ushort count )
 	{{
 		bool success = true;
 		{4}
@@ -86,14 +98,14 @@ public List<{0}> {1}s = new List<{0}>();";
     // {1} To~ 변수 형식
     // {2} 변수 형식
     public static string readFormat =
-@"this.{0} = BitConverter.{1}(s.Slice(count, s.Length - count));
+@"this.{0} = BitConverter.{1}( s.Slice( count, s.Length - count ) );
 count += sizeof({2});";
 
     // {0} 변수 이름
     public static string readStringFormat =
-@"ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+@"ushort {0}Len = BitConverter.ToUInt16( s.Slice( count, s.Length - count ) );
 count += sizeof(ushort);
-this.{0} = Encoding.Unicode.GetString(s.Slice(count, {0}Len));
+this.{0} = Encoding.Unicode.GetString( s.Slice( count, {0}Len ) );
 count += {0}Len;";
 
     // {0} 리스트 이름 [대문자]
