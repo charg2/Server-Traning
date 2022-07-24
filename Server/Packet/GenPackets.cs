@@ -5,8 +5,9 @@ using System.Net;
 using ServerCore;
 public enum PacketID
 {
-    PlayerInfoReq = 1,
-	xx
+    C_PlayerInfoReq = 1,
+	S_PlayerInfoResult = 2,
+	
 }
 
 interface IPacket
@@ -16,7 +17,7 @@ interface IPacket
     ArraySegment< byte > Write();
 }
 
-class PlayerInfoReq : IPacket
+class C_PlayerInfoReq : IPacket
 {
     public long playerId;
 	public string name;
@@ -30,7 +31,7 @@ class PlayerInfoReq : IPacket
 			public int att;
 			public void Read( ReadOnlySpan< byte > s, ref ushort count )
 			{
-				this.att = BitConverter.ToInt32(s.Slice(count, s.Length - count));
+				this.att = BitConverter.ToInt32( s.Slice( count, s.Length - count ) );
 				count += sizeof(int);
 			}
 			public bool Write( Span< byte > s, ref ushort count )
@@ -44,11 +45,11 @@ class PlayerInfoReq : IPacket
 		public List<Attribute> attributes = new List<Attribute>();
 		public void Read( ReadOnlySpan< byte > s, ref ushort count )
 		{
-			this.id = BitConverter.ToInt32(s.Slice(count, s.Length - count));
+			this.id = BitConverter.ToInt32( s.Slice( count, s.Length - count ) );
 			count += sizeof(int);
-			this.level = BitConverter.ToInt16(s.Slice(count, s.Length - count));
+			this.level = BitConverter.ToInt16( s.Slice( count, s.Length - count ) );
 			count += sizeof(short);
-			this.duration = BitConverter.ToSingle(s.Slice(count, s.Length - count));
+			this.duration = BitConverter.ToSingle( s.Slice( count, s.Length - count ) );
 			count += sizeof(float);
 			this.attributes.Clear();
 			ushort attributeLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
@@ -78,7 +79,7 @@ class PlayerInfoReq : IPacket
 	}
 	public List<Skill> skills = new List<Skill>();   
 
-    public ushort Protocol => (ushort)( PacketID.PlayerInfoReq );
+    public ushort Protocol => (ushort)( PacketID.C_PlayerInfoReq );
 
     public void Read( ArraySegment< byte > segment )
     {
@@ -86,11 +87,11 @@ class PlayerInfoReq : IPacket
         ReadOnlySpan<byte> s = new ReadOnlySpan< byte >(segment.Array, segment.Offset, segment.Count);
         count += sizeof( ushort );
         count += sizeof( ushort );
-        this.playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
+        this.playerId = BitConverter.ToInt64( s.Slice( count, s.Length - count ) );
 		count += sizeof(long);
-		ushort nameLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+		ushort nameLen = BitConverter.ToUInt16( s.Slice( count, s.Length - count ) );
 		count += sizeof(ushort);
-		this.name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
+		this.name = Encoding.Unicode.GetString( s.Slice( count, nameLen ) );
 		count += nameLen;
 		this.skills.Clear();
 		ushort skillLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
@@ -109,7 +110,7 @@ class PlayerInfoReq : IPacket
         bool success = true;
         Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
-        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.PlayerInfoReq );
+        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.C_PlayerInfoReq );
         count += sizeof( ushort ); 
         success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
 		count += sizeof(long);
@@ -121,6 +122,36 @@ class PlayerInfoReq : IPacket
 		count += sizeof(ushort);
 		foreach (Skill skill in this.skills)
 			success &= skill.Write(s, ref count);
+        success &= BitConverter.TryWriteBytes( s, count );
+        if ( success == false )
+            return null;
+
+        return SendBufferHelper.Close( count );
+    }
+}class S_PlayerInfoResult : IPacket
+{
+       
+
+    public ushort Protocol => (ushort)( PacketID.S_PlayerInfoResult );
+
+    public void Read( ArraySegment< byte > segment )
+    {
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >(segment.Array, segment.Offset, segment.Count);
+        count += sizeof( ushort );
+        count += sizeof( ushort );
+        
+    }
+    public ArraySegment< byte > Write()
+    {
+        ArraySegment< byte > segment = SendBufferHelper.Open( 4096 );
+        ushort count = 0;
+        bool success = true;
+        Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
+        count += sizeof( ushort );
+        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.S_PlayerInfoResult );
+        count += sizeof( ushort ); 
+        
         success &= BitConverter.TryWriteBytes( s, count );
         if ( success == false )
             return null;
