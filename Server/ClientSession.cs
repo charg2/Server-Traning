@@ -36,7 +36,7 @@ class ClientSession : PacketSession
                 p.Read( buffer );
                 Console.WriteLine( $"PlayerInfoReq : {p.playerId} {p.name}" );
 
-                foreach ( PlayerInfoReq.SkillInfo skill in p.skills )
+                foreach ( PlayerInfoReq.Skill skill in p.skills )
                     Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
             } 
             break;

@@ -5,8 +5,11 @@
 		<string name = "name"/>
 		<list   name = "skill">
 			<int   name = "id"/>
-			<shot  name = "level"/>
+			<short name = "level"/>
 			<float name = "duration"/>
+			<list  name = "attribute">
+				<int name ="att"/>
+			</list>
 		</list>
 	</packet>
 </PDL>
