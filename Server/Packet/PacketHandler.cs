@@ -18,7 +18,7 @@ class PacketHandler
             return;
 
         GameRoom room = clientSession.Room;
-        room.Push( 
+        room.DoAsyncJob( 
             () => room.Broadcast( clientSession, chatPacket.chat ) );
     }
 }

@@ -11,9 +11,9 @@ public class GameRoom : IJobExecutor
     private object                _lock        = new();
     private JobExecutor           _jobExecutor = new();
 
-    public void Push( Action job )
+    public void DoAsyncJob( Action job )
     {
-        _jobExecutor.Push( job );
+        _jobExecutor.DoAsyncJob( job );
     }
 
     public void Enter( ClientSession session )
