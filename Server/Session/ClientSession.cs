@@ -12,7 +12,7 @@ public class ClientSession : PacketSession
     {
         Console.WriteLine( $"OnConnected : {endPoint}" );
 
-        GameRoom.Instance.Enter( this );
+        GameRoom.Instance.Push( () => GameRoom.Instance.Enter( this ) );
     }
 
     public override void OnRecvPacket( ArraySegment<byte> buffer )
@@ -25,7 +25,7 @@ public class ClientSession : PacketSession
         SessionManager.Instance.Remove( this );
         if ( Room != null )
         {
-            Room.Leave( this );
+            GameRoom.Instance.Push( () => GameRoom.Instance.Leave( this ) );
             Room = null;
         }
 
