@@ -3,20 +3,18 @@ using ServerCore;
 
 namespace Server;
 
-class Packet
+public class ClientSession : PacketSession
 {
-    public ushort size;
-    public ushort packetId;
-}
+    public int      SessionId { get; set; }
+    public GameRoom Room      { get; set; }
 
-class ClientSession : PacketSession
-{
     public override void OnConnected( EndPoint endPoint )
     {
         Console.WriteLine( $"OnConnected : {endPoint}" );
 
-        Thread.Sleep( 5000 );
-        Disconnect();
+        //Thread.Sleep( 5000 );
+        //Disconnect();
+        
     }
 
     public override void OnRecvPacket( ArraySegment<byte> buffer )
@@ -26,6 +24,8 @@ class ClientSession : PacketSession
 
     public override void OnDisConnected( EndPoint endPoint )
     {
+        SessionManager.Instance.Remove( this );
+
         Console.WriteLine( $"OnDisConnected : {endPoint}" );
     }
 

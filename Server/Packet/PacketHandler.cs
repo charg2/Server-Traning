@@ -10,11 +10,16 @@ class PacketHandler
 {
     public static void C_PlayerInfoReqHandler( PacketSession arg1, IPacket arg2 )
     {
-        var packet = arg2 as C_PlayerInfoReq;
+        //var packet = arg2 as C_PlayerInfoReq;
 
-        Console.WriteLine( $"PlayerInfoReq : {packet.playerId} {packet.name}" );
+        //Console.WriteLine( $"PlayerInfoReq : {packet.playerId} {packet.name}" );
 
-        foreach ( C_PlayerInfoReq.Skill skill in packet.skills )
-            Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
+        //foreach ( C_PlayerInfoReq.Skill skill in packet.skills )
+        //    Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
+    }
+
+    public static void C_ChatHandler( PacketSession arg1, IPacket arg2 )
+    {
+        throw new NotImplementedException();
     }
 }

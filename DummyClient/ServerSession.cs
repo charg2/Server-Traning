@@ -4,30 +4,11 @@ using ServerCore;
 
 namespace DummyClient;
 
-class Packet
-{
-    public ushort size;
-    public ushort packetId;
-}
-
 class ServerSession : Session
 {
     public override void OnConnected( EndPoint endPoint )
     {
         Console.WriteLine( $"OnConnected : {endPoint}" );
-        var packet = new C_PlayerInfoReq() { playerId = 1, name = "ABCD" };
-        packet.skills.Add( new C_PlayerInfoReq.Skill() { id = 101, level = 1, duration = 3.0f } );
-        packet.skills.Add( new C_PlayerInfoReq.Skill() { id = 201, level = 2, duration = 4.0f } );
-        packet.skills.Add( new C_PlayerInfoReq.Skill() { id = 301, level = 3, duration = 5.0f } );
-        packet.skills.Add( new C_PlayerInfoReq.Skill() { id = 401, level = 4, duration = 6.0f } );
-
-        // 보낸다
-        // for (int i = 0; i < 5; i++)
-        {
-            ArraySegment< byte > s = packet.Write();
-            if ( s != null )
-                Send( s );
-        }
     }
 
     public override void OnDisConnected( EndPoint endPoint )

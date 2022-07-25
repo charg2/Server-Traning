@@ -9,7 +9,8 @@ using ServerCore;
 
 
 
-Listener _listener = new Listener();
+Listener _listener = new();
+GameRoom Room      = new();
 
 PacketManager.Instance.Register();
 
@@ -21,7 +22,7 @@ IPEndPoint  endPoint = new IPEndPoint(ipAddr, 7777);
 
 // www.rookiss.com -> 127.1.2.3
 /* 서버 */
-_listener.Init( endPoint, () => new ClientSession() );
+_listener.Init( endPoint, () => SessionManager.Instance.Generate() );
 Console.WriteLine( "Listening..." );
 
 while ( true )
