@@ -11,19 +11,12 @@ using ServerCore;
 
 class PacketManager
 {{
-    #region  Singleton
-    static PacketManager _instance;
-    public static PacketManager Instance
-    {{
-        get
-        {{
-            if ( _instance == null )
-                _instance = new PacketManager();
+    public static PacketManager Instance {{ get; }} = new();
 
-            return _instance;
-        }}
+    PacketManager()
+    {{
+        Register();
     }}
-    #endregion
 
     Dictionary< ushort, Action< PacketSession, ArraySegment< byte > > > _onRecv = new();
     Dictionary< ushort, Action< PacketSession, IPacket > > _handler = new();
@@ -115,7 +108,7 @@ interface IPacket
         bool success = true;
         Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
-        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.{0} );
+        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length-count ), (ushort)PacketID.{0} );
         count += sizeof( ushort ); 
         {3}
         success &= BitConverter.TryWriteBytes( s, count );

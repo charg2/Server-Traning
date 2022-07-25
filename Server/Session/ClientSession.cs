@@ -5,16 +5,14 @@ namespace Server;
 
 public class ClientSession : PacketSession
 {
-    public int      SessionId { get; set; }
-    public GameRoom Room      { get; set; }
+    public int       SessionId { get; set; }
+    public GameRoom? Room      { get; set; }
 
     public override void OnConnected( EndPoint endPoint )
     {
         Console.WriteLine( $"OnConnected : {endPoint}" );
 
-        //Thread.Sleep( 5000 );
-        //Disconnect();
-        
+        GameRoom.Instance.Enter( this );
     }
 
     public override void OnRecvPacket( ArraySegment<byte> buffer )
@@ -25,6 +23,11 @@ public class ClientSession : PacketSession
     public override void OnDisConnected( EndPoint endPoint )
     {
         SessionManager.Instance.Remove( this );
+        if ( Room != null )
+        {
+            Room.Leave( this );
+            Room = null;
+        }
 
         Console.WriteLine( $"OnDisConnected : {endPoint}" );
     }

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using DummyClient;
+using Server;
 using ServerCore;
 
 // DNS (Domain Name System)
@@ -10,13 +11,15 @@ IPEndPoint  endPoint = new IPEndPoint( ipAddr, 7777 );
 
 Connector connector = new Connector();
 
-connector.Conncect( endPoint, () => { return new ServerSession(); } );
+connector.Connect( endPoint,
+                   () => SessionManager.Instance.Generate(),
+                   10 );
 
 while ( true )
 {
     try
     {
-
+        SessionManager.Instance.SendForEach();
     }
     catch ( Exception e )
     {

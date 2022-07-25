@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Server;
 
 
 class PacketHandler
@@ -18,8 +19,14 @@ class PacketHandler
         //    Console.WriteLine( $"Skill({skill.id})({skill.level})({skill.duration})" );
     }
 
-    public static void C_ChatHandler( PacketSession arg1, IPacket arg2 )
+    public static void C_ChatHandler( PacketSession session, IPacket arg2 )
     {
-        throw new NotImplementedException();
+        var chatPacket    = arg2 as C_Chat;
+        var clientSession = session as ClientSession;
+
+        if ( clientSession?.Room == null )
+            return;
+
+        clientSession.Room.Broadcast( clientSession, chatPacket.chat );
     }
 }

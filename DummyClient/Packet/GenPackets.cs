@@ -26,11 +26,11 @@ class C_Chat : IPacket
     public void Read( ArraySegment< byte > segment )
     {
         ushort count = 0;
-        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >(segment.Array, segment.Offset, segment.Count);
+        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
         count += sizeof( ushort );
         ushort chatLen = BitConverter.ToUInt16( s.Slice( count, s.Length - count ) );
-		count += sizeof(ushort);
+		count += sizeof( ushort );
 		this.chat = Encoding.Unicode.GetString( s.Slice( count, chatLen ) );
 		count += chatLen;
     }
@@ -41,7 +41,7 @@ class C_Chat : IPacket
         bool success = true;
         Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
-        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.C_Chat );
+        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length-count ), (ushort)PacketID.C_Chat );
         count += sizeof( ushort ); 
         ushort chatLen = (ushort)Encoding.Unicode.GetBytes(this.chat, 0, this.chat.Length, segment.Array, segment.Offset + count + sizeof(ushort));
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), chatLen);
@@ -63,13 +63,13 @@ class C_Chat : IPacket
     public void Read( ArraySegment< byte > segment )
     {
         ushort count = 0;
-        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >(segment.Array, segment.Offset, segment.Count);
+        ReadOnlySpan<byte> s = new ReadOnlySpan< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
         count += sizeof( ushort );
         this.playerId = BitConverter.ToInt32( s.Slice( count, s.Length - count ) );
 		count += sizeof(int);
 		ushort chatLen = BitConverter.ToUInt16( s.Slice( count, s.Length - count ) );
-		count += sizeof(ushort);
+		count += sizeof( ushort );
 		this.chat = Encoding.Unicode.GetString( s.Slice( count, chatLen ) );
 		count += chatLen;
     }
@@ -80,9 +80,9 @@ class C_Chat : IPacket
         bool success = true;
         Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
-        success &= BitConverter.TryWriteBytes( s.Slice(count, s.Length-count), (ushort)PacketID.S_Chat );
+        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length-count ), (ushort)PacketID.S_Chat );
         count += sizeof( ushort ); 
-        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
+        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length - count ), this.playerId );
 		count += sizeof(int);
 		ushort chatLen = (ushort)Encoding.Unicode.GetBytes(this.chat, 0, this.chat.Length, segment.Array, segment.Offset + count + sizeof(ushort));
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), chatLen);

@@ -3,7 +3,7 @@ namespace Server;
 // ServerCore에서 작업해도 괜찮다. => 단순 취향 차이
 class SessionManager
 {
-    static        SessionManager _instance = new SessionManager();
+    static        SessionManager _instance = new();
     public static SessionManager Instance => _instance;
 
     // 티켓 아이디
@@ -21,7 +21,7 @@ class SessionManager
             var session = new ClientSession { SessionId = sessionId };
             _sessions.Add( sessionId, session );
 
-            System.Console.WriteLine( $"Connected : {sessionId}" );
+            System.Console.WriteLine( $"Connected : { sessionId }" );
 
             return session;
         }

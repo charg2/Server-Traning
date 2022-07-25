@@ -10,9 +10,6 @@ using ServerCore;
 
 
 Listener _listener = new();
-GameRoom Room      = new();
-
-PacketManager.Instance.Register();
 
 // DNS (Domain Name System)
 string      host     = Dns.GetHostName();
