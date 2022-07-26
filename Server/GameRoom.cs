@@ -7,9 +7,10 @@ public class GameRoom : IJobExecutor
     static        GameRoom _instance = new();
     public static GameRoom Instance => _instance;
 
-    private List< ClientSession > _sessions    = new();
-    private object                _lock        = new();
-    private JobExecutor           _jobExecutor = new();
+    private List< ClientSession >        _sessions    = new();
+    private object                       _lock        = new();
+    private JobExecutor                  _jobExecutor = new();
+    private List< ArraySegment< byte > > _pendingList = new();
 
     public void DoAsyncJob( Action job )
     {
@@ -37,7 +38,15 @@ public class GameRoom : IJobExecutor
 
         ArraySegment< byte > segment = packet.Write();
 
+        _pendingList.Add( segment );
+    }
+
+    public void Flush()
+    {
         foreach ( var session in _sessions )
-            session.Send( segment );
+            session.Send( _pendingList );
+
+        Console.WriteLine( $"Flushed { _pendingList.Count } Items" );
+        _pendingList.Clear();
     }
 }

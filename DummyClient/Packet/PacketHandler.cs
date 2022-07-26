@@ -7,7 +7,6 @@ class PacketHandler
     {
         var chatPacket = packet as S_Chat;
         ServerSession serverSession = session as ServerSession;
-
-        Console.WriteLine( chatPacket.chat );
+        //Console.WriteLine( chatPacket.chat );
     }
 }

@@ -11,7 +11,8 @@ public abstract class PacketSession : Session
     // [size(2)][packetId(2)][...][size(2)][packetId(2)][...]
     public sealed override int OnRecv( ArraySegment< byte > buffer )
     {
-        int processLen = 0;
+        int processLen  = 0;
+        int packetCount = 0;
 
         while ( true )
         {
@@ -26,9 +27,16 @@ public abstract class PacketSession : Session
 
             // 여기까지 왔으면 패킷 조립이 가능하다
             OnRecvPacket( new ArraySegment< byte >( buffer.Array, buffer.Offset, dataSize ) );
+            packetCount += 1;
+
             processLen += dataSize;
             buffer     =  new ArraySegment< byte >( buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize );
         }
+
+        
+        if ( packetCount > 1 )
+            Console.WriteLine( $"패킷 모아 보내기{ packetCount }" );
+
         return processLen;
     }
 
@@ -40,7 +48,7 @@ public abstract class Session
     private Socket _socket;
     private int    _disconnected = 0;
 
-    private RecvBuffer _recvBuffer = new RecvBuffer( 1024 );
+    private RecvBuffer _recvBuffer = new( 65535 );
 
     private object                        _lock        = new();
     private Queue< ArraySegment< byte > > _sendQueue   = new();
@@ -48,11 +56,11 @@ public abstract class Session
     private SocketAsyncEventArgs          _sendArgs    = new();
     private SocketAsyncEventArgs          _recvArgs    = new();
 
-    
+
     public abstract void OnConnected( EndPoint endPoint );
 
-    public abstract int  OnRecv( ArraySegment< byte > buffer );
-    
+    public abstract int OnRecv( ArraySegment<byte> buffer );
+
     public abstract void OnSend( int numOfBytes );
 
     public abstract void OnDisConnected( EndPoint endPoint );
@@ -77,7 +85,7 @@ public abstract class Session
         }
     }
 
-    public void Send( ArraySegment< byte > sendBuff )
+    public void Send( ArraySegment<byte> sendBuff )
     {
         lock ( _lock )
         {
@@ -86,6 +94,22 @@ public abstract class Session
                 RegisterSend();
         }
     }
+
+    public void Send( List< ArraySegment< byte > > sendBuffList )
+    {
+        if ( sendBuffList.Count == 0 )
+            return;
+
+        lock ( _lock )
+        {
+            foreach ( var sendBuff in sendBuffList )
+                _sendQueue.Enqueue( sendBuff );
+            
+            if ( _pendingList.Count == 0 )
+                RegisterSend();
+        }
+    }
+
 
     public void Disconnect()
     {

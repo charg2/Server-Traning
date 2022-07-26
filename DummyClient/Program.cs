@@ -13,7 +13,7 @@ Connector connector = new Connector();
 
 connector.Connect( endPoint,
                    () => SessionManager.Instance.Generate(),
-                   10 );
+                   500 );
 
 while ( true )
 {
@@ -26,6 +26,6 @@ while ( true )
         Console.WriteLine( e.ToString() );
     }
 
-    Thread.Sleep( 1000 );
+    Thread.Sleep( 250 );
 }
 

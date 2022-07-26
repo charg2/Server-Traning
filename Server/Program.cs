@@ -26,5 +26,6 @@ while ( true )
 {
     // 손님을 입장시킨다.
     //Socket clientSocket = _listener.Accept();               
-    ;
+    GameRoom.Instance.DoAsyncJob( () => GameRoom.Instance.Flush() );
+    Thread.Sleep( 250 );
 }

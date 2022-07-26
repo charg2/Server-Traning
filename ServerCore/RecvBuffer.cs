@@ -9,7 +9,7 @@ public class RecvBuffer
 
     public RecvBuffer( int bufferSize )
     {
-        _buffer = new ArraySegment<byte>( new byte[ bufferSize ], 0, bufferSize );
+        _buffer = new ArraySegment< byte >( new byte[ bufferSize ], 0, bufferSize );
     }
 
     public int DataSize => _writePos     - _readPos;
