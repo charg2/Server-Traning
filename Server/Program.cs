@@ -22,10 +22,17 @@ IPEndPoint  endPoint = new IPEndPoint(ipAddr, 7777);
 _listener.Init( endPoint, () => SessionManager.Instance.Generate() );
 Console.WriteLine( "Listening..." );
 
+// FlushRoom();
+
+JobTimer.Instance.DoAsyncJobAfter( FlushRoom, 250 );
+
 while ( true )
 {
-    // 손님을 입장시킨다.
-    //Socket clientSocket = _listener.Accept();               
+    JobTimer.Instance.Flush();
+}
+
+void FlushRoom()
+{
     GameRoom.Instance.DoAsyncJob( () => GameRoom.Instance.Flush() );
-    Thread.Sleep( 250 );
+    JobTimer.Instance.DoAsyncJobAfter( FlushRoom, 250 );
 }
