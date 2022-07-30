@@ -7,7 +7,7 @@ namespace ServerCore
     public class SendBufferHelper
     {
         public static ThreadLocal< SendBuffer > CurrentBuffer = new( () => null );
-        public static int                       ChunkSize { get; set; } = 65535 * 100;
+        public static int                       ChunkSize { get; set; } = 65535;
 
         public static ArraySegment< byte > Open( int reserveSize )
         {
@@ -20,10 +20,8 @@ namespace ServerCore
             return CurrentBuffer.Value.Open( reserveSize );
         }
 
-        public static ArraySegment< byte > Close( int usedSize )
-        {
-            return CurrentBuffer.Value.Close( usedSize );
-        }
+        public static ArraySegment< byte > Close( int usedSize ) 
+            => CurrentBuffer.Value.Close( usedSize );
 
     }
 

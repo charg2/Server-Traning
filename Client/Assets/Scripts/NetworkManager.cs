@@ -1,4 +1,5 @@
-﻿using ServerCore;
+﻿using System.Collections;
+using ServerCore;
 using System.Net;
 using UnityEngine;
 
@@ -20,10 +21,15 @@ namespace DummyClient
             connector.Connect( endPoint,
                                () => _session,
                                1 );
-
         }
 
         public void Update()
+        {
+            IPacket packet = PacketQueue.Instance.Pop();
+            if ( packet != null )
+                PacketManager.Instance.HandlePacket( _session, packet );
+        }
+        IEnumerator CoSendPacket()
         {
         }
     }
