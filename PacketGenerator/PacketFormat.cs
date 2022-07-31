@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using ServerCore;
 
-class PacketManager
+public class PacketManager
 {{
     public static PacketManager Instance {{ get; }} = new();
 
@@ -99,7 +99,7 @@ public interface IPacket
     // {2} 멤버 변수 Rread
     // {3} 멤버 변수 Write
     public static string packetFormat =
-@"class {0} : IPacket
+@"public class {0} : IPacket
 {{
     {1}   
 

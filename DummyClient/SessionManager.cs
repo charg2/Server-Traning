@@ -10,6 +10,7 @@ class SessionManager
 
     private List< ServerSession > _sessions = new();
     private object                _lock     = new();
+    Random _random = new();
 
     /// <summary>
     /// Session 생성 
@@ -49,14 +50,15 @@ class SessionManager
         {
             foreach ( var session in _sessions )
             {
-                var chatPacket = new C_Chat();
-                chatPacket.chat = "Hello Server";
-                ArraySegment< byte > segment = chatPacket.Write();
+                var movePacket = new C_Move
+                {
+                    posX = _random.Next( -50, 50 ),
+                    posY = 0,
+                    posZ = _random.Next( -50, 50 )
+                };
 
-                session.Send( segment );
+                session.Send( movePacket.Write() );
             }
-
-            Thread.Sleep( 250 );
         }
     }
 }
