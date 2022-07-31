@@ -2,6 +2,7 @@
 using ServerCore;
 using System.Net;
 using UnityEngine;
+using System;
 
 namespace DummyClient
 {
@@ -21,6 +22,8 @@ namespace DummyClient
             connector.Connect( endPoint,
                                () => _session,
                                1 );
+
+            StartCoroutine( CoSendPacket() );
         }
 
         public void Update()
@@ -29,8 +32,18 @@ namespace DummyClient
             if ( packet != null )
                 PacketManager.Instance.HandlePacket( _session, packet );
         }
+
         IEnumerator CoSendPacket()
         {
+            while ( true )
+            {
+                yield return new WaitForSeconds( 3.0f );
+
+                C_Chat chatPacket = new C_Chat();
+                chatPacket.chat = "Hello Unity!";
+                ArraySegment<byte> segment = chatPacket.Write();
+                _session.Send( segment );
+            }
         }
     }
 }
