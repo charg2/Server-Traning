@@ -2,7 +2,7 @@
 using DummyClient;
 
 namespace Server;
-// ServerCore에서 작업해도 괜찮다. => 단순 취향 차이
+
 class SessionManager
 {
     static        SessionManager _instance = new();

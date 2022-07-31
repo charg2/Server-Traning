@@ -13,13 +13,13 @@ Listener _listener = new();
 
 // DNS (Domain Name System)
 string      host     = Dns.GetHostName();
-IPHostEntry ipHost   = Dns.GetHostEntry(host);
-IPAddress   ipAddr   = ipHost.AddressList[0];
-IPEndPoint  endPoint = new IPEndPoint(ipAddr, 7777);
+IPHostEntry ipHost   = Dns.GetHostEntry( host );
+IPAddress   ipAddr   = ipHost.AddressList[ 0 ];
+IPEndPoint  endPoint = new IPEndPoint( ipAddr, 7777 );
 
 // www.rookiss.com -> 127.1.2.3
 /* 서버 */
-_listener.Init( endPoint, () => SessionManager.Instance.Generate() );
+_listener.Init( endPoint, () => SessionManager.Instance.Generate(), 502 );
 Console.WriteLine( "Listening..." );
 
 // FlushRoom();

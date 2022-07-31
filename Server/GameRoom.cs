@@ -84,7 +84,8 @@ public class GameRoom : IJobExecutor
 
         var move = new S_BroadcastMove()
         {
-            posX = clientSession.PosX, 
+            playerId = clientSession.SessionId, 
+            posX = clientSession.PosX,
             posY = clientSession.PosY, 
             posZ = clientSession.PosZ,
         };

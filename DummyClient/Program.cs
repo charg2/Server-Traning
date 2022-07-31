@@ -13,7 +13,7 @@ Connector connector = new Connector();
 
 connector.Connect( endPoint,
                    () => SessionManager.Instance.Generate(),
-                   100 );
+                   500 );
 
 while ( true )
 {

@@ -3,6 +3,7 @@ using ServerCore;
 using System.Net;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace DummyClient
 {
@@ -22,28 +23,20 @@ namespace DummyClient
             connector.Connect( endPoint,
                                () => _session,
                                1 );
-
-            StartCoroutine( CoSendPacket() );
         }
 
         public void Update()
         {
-            IPacket packet = PacketQueue.Instance.Pop();
-            if ( packet != null )
+            List<IPacket> list = PacketQueue.Instance.PopAll();
+
+            foreach ( IPacket packet in list )
                 PacketManager.Instance.HandlePacket( _session, packet );
         }
 
-        IEnumerator CoSendPacket()
-        {
-            while ( true )
-            {
-                yield return new WaitForSeconds( 3.0f );
 
-                C_Chat chatPacket = new C_Chat();
-                chatPacket.chat = "Hello Unity!";
-                ArraySegment<byte> segment = chatPacket.Write();
-                _session.Send( segment );
-            }
+        public void Send( ArraySegment< byte > sendBuff )
+        {
+            _session.Send( sendBuff );
         }
     }
 }

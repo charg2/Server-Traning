@@ -21,10 +21,21 @@ public class PacketQueue
         lock ( _lock )
         {
             if ( _packetQueue.Count == 0 )
-            {
                 return null;
-            }
+
             return _packetQueue.Dequeue();
         }
+    }
+
+    public List< IPacket > PopAll()
+    {
+        var list = new List< IPacket >();
+        lock ( _lock )
+        {
+            while ( _packetQueue.Count > 0 )
+                list.Add( _packetQueue.Dequeue() );
+        }
+
+        return list;
     }
 }

@@ -115,12 +115,12 @@ public interface IPacket
     }}
     public ArraySegment< byte > Write()
     {{
-        ArraySegment< byte > segment = SendBufferHelper.Open( 4096 );
+        ArraySegment< byte > segment = SendBufferHelper.Open( 25600 );
         ushort count = 0;
         bool success = true;
         Span< byte > s = new Span< byte >( segment.Array, segment.Offset, segment.Count );
         count += sizeof( ushort );
-        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length-count ), (ushort)PacketID.{0} );
+        success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length-count ), ( ushort )PacketID.{0} );
         count += sizeof( ushort ); 
         {3}
         success &= BitConverter.TryWriteBytes( s, count );
@@ -193,17 +193,17 @@ count += sizeof({1});";
 
     // {0} 변수 이름
     public static string writeStringFormat =
-@"ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + sizeof(ushort));
+@"ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + sizeof( ushort ));
 success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0}Len);
-count += sizeof(ushort);
+count += sizeof( ushort );
 count += {0}Len;";
 
     // {0} 리스트 이름 [대문자]
     // {1} 리스트 이름 [소문자]
     public static string writeListFormat =
-@"success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length - count ), (ushort)this.{1}s.Count );
-count += sizeof(ushort);
+@"success &= BitConverter.TryWriteBytes( s.Slice( count, s.Length - count ), ( ushort )this.{1}s.Count );
+count += sizeof( ushort );
 foreach ({0} {1} in this.{1}s)
-	success &= {1}.Write(s, ref count);";
+	success &= {1}.Write( s, ref count );";
 
 }
